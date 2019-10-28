@@ -44,6 +44,9 @@ class AppController extends Controller
         $this->loadComponent('RequestHandler', [
             'enableBeforeRedirect' => false,
         ]);
+		$this->RequestHandler->prefers('json');
+		//$this->RequestHandler->renderAs($this, 'xml');
+		
         $this->loadComponent('Flash');
 
         /*

@@ -30,7 +30,7 @@ $cakeDescription = 'IERG 4210 Clothing Shop';
       margin-bottom: 0;
       width: 100%;
     }
-    .nav-link{
+    .nav-item{
       font-size: 20px;
     }
     .breadcrumb{
@@ -72,6 +72,9 @@ $cakeDescription = 'IERG 4210 Clothing Shop';
     #cartlist{
         text-align: justify;
     }
+	.img-thumbnail{
+		height: 100px;
+	}
     .dropdown:hover .dropdown-content{
       display: block;
     }
@@ -85,6 +88,53 @@ $cakeDescription = 'IERG 4210 Clothing Shop';
       text-align: center;
     }
 </style>
+<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+<script>
+	function cartAction(action,product_pid) {
+		var csrfToken = <?= json_encode($this->request->getParam('_csrfToken')) ?>;
+		var queryString = "";
+		var targetUrl = "<?php echo $this->Url->build( [ 'controller' => 'cart', 'action' => 'index' ] ); ?>";
+		if(action != "") {
+			switch(action) {
+				case "add":
+					queryString = 'action='+action+'&pid='+ product_pid+'&quantity=1';
+				break;
+				case "remove":
+					queryString = 'action='+action+'&pid='+ product_pid;
+				break;
+				case "clear":
+					queryString = 'action='+action;
+				break;
+			}	 
+		}
+		$.ajax({
+			headers: {'X-CSRF-Token': csrfToken},
+			url: targetUrl,
+			data:queryString,
+			type: "POST",
+			success:function(data){
+				$("#cartlist").html(data);
+				if(action != "") {
+					switch(action) {
+						case "add":
+							$("#add_"+product_pid).hide();
+							$("#added_"+product_pid).show();
+						break;
+						case "remove":
+							$("#add_"+product_pid).show();
+							$("#added_"+product_pid).hide();
+						break;
+						case "clear":
+							$(".btnAddAction").show();
+							$(".btnAdded").hide();
+						break;
+					}	 
+				}
+			},
+			error:function (){}
+		});	
+	};
+</script>
 </head>
 
 <body>
@@ -94,13 +144,13 @@ $cakeDescription = 'IERG 4210 Clothing Shop';
     <?= $this->Flash->render() ?>
 	<ul class="nav nav-tabs nav-justified">
 		<li class="nav-item ">
-			<?= $this->Html->link(__('Men'), ['class' => 'nav-link', 'controller'=>'Categories', 'action' => 'men']) ?>
+			<?= $this->Html->link(__('Men'), ['controller'=>'Categories', 'action' => 'men'],['class' => 'nav-link']) ?>
 		</li>
 		<li class="nav-item">
-			<?= $this->Html->link(__('Women'), ['class' => 'nav-link', 'controller'=>'Categories', 'action' => 'women']) ?>
+			<?= $this->Html->link(__('Women'), ['controller'=>'Categories', 'action' => 'women'],['class' => 'nav-link']) ?>
 		</li>
 		<li class="nav-item">
-			<?= $this->Html->link(__('Accessories'), ['class' => 'nav-link', 'controller'=>'Categories', 'action' => 'accessories']) ?>
+			<?= $this->Html->link(__('Accessories'), ['controller'=>'Categories', 'action' => 'accessories'],['class' => 'nav-link']) ?>
 		</li>
 	</ul>
     <div class="container fluid">
@@ -108,7 +158,7 @@ $cakeDescription = 'IERG 4210 Clothing Shop';
         <?= $this->fetch('content') ?>
     </div>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script>
@@ -117,6 +167,10 @@ $cakeDescription = 'IERG 4210 Clothing Shop';
 		  var fileName = $(this).val().split("\\").pop();
 		  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 		});
+		
+		$(document).ready(function () {
+			cartAction('','');
+		})
 	</script>
 </body>
 </html>

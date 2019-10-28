@@ -12,7 +12,9 @@ use App\Controller\AppController;
  */
 class CategoriesController extends AppController
 {
-    /**
+    var $in_session = "0";
+	
+	/**
      * Index method
      *
      * @return \Cake\Http\Response|null
@@ -23,6 +25,7 @@ class CategoriesController extends AppController
 		//$products = $this->Products->find('all');
 		$products = $this->paginate('Products');
 		$this->set('products', $products);
+		$this->set('$in_session', $this->in_session);
     }
 	
 	public function men()
@@ -33,7 +36,7 @@ class CategoriesController extends AppController
 						]);
 		$menProducts = $this->paginate($menProducts);
 		$this->set('menProducts', $menProducts);
-        //$this->set('category', $category);
+        $this->set('$in_session', $this->in_session);
     }
 	
 	public function women()
@@ -44,7 +47,7 @@ class CategoriesController extends AppController
 						]);
 		$womenProducts = $this->paginate($womenProducts);
 		$this->set('womenProducts', $womenProducts);
-        //$this->set('category', $category);
+        $this->set('$in_session', $this->in_session);
     }
 	
 	public function accessories()
@@ -55,7 +58,7 @@ class CategoriesController extends AppController
 						]);
 		$accessoriesProducts = $this->paginate($accessoriesProducts);
 		$this->set('accessoriesProducts', $accessoriesProducts);
-        //$this->set('category', $category);
+        $this->set('$in_session', $this->in_session);
     }
 	
 	public function list()
